@@ -89,9 +89,7 @@ class H11Handshake:
             raise LocalProtocolError(
                 msg,
             )
-        upgrade_request = h11.Request(
-            method=b"GET", target=path, headers=list(headers),
-        )
+        upgrade_request = h11.Request(method=b"GET", target=path, headers=headers)
         h11_client = h11.Connection(h11.CLIENT)
         self.receive_data(h11_client.send(upgrade_request))
 
@@ -302,7 +300,7 @@ class H11Handshake:
 
         response = h11.InformationalResponse(
             status_code=101,
-            headers=headers + list(event.extra_headers),
+            headers=[*headers, *event.extra_headers],
             reason=b"Switching Protocols",
         )
         self._connection = Connection(
@@ -384,7 +382,7 @@ class H11Handshake:
         upgrade = h11.Request(
             method=b"GET",
             target=request.target.encode("ascii"),
-            headers=headers + list(request.extra_headers),
+            headers=[*headers, *request.extra_headers],
         )
         return self._h11_connection.send(upgrade) or b""
 
