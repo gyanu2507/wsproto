@@ -89,7 +89,12 @@ class H11Handshake:
             raise LocalProtocolError(
                 msg,
             )
-        upgrade_request = h11.Request(method=b"GET", target=path, headers=headers)
+        # h11 walks any sequence of pairs at runtime. Its stubs only allow list.
+        upgrade_request = h11.Request(
+            method=b"GET",
+            target=path,
+            headers=cast("list[tuple[bytes, bytes]]", headers),
+        )
         h11_client = h11.Connection(h11.CLIENT)
         self.receive_data(h11_client.send(upgrade_request))
 
